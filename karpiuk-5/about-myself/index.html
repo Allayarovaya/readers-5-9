@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<html lang="en"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow, noarchive, noimageindex"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>About Myself · Listen & Read · Reader Karpiuk 5</title>
 <meta name="description" content="Listen and read: About Myself. Reader Karpiuk 5, Let’s Get Started!. By Alla Yarova.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -58,7 +58,7 @@ footer{text-align:center;font-size:14px;padding:18px;opacity:.8}
 <main>
  <section class="player" aria-label="Audio player">
   <div class="plabel">Listen to the text</div>
-  <audio id="au" src="audio.mp3" controls preload="metadata"></audio>
+  <audio id="au" src="audio.mp3" controls preload="metadata" controlsList="nodownload noplaybackrate noremoteplayback" disablePictureInPicture oncontextmenu="return false"></audio>
   <div class="ctl"><span>Speed:</span><button data-s="0.75">0.75×</button><button data-s="1" class="on">1×</button><button data-s="1.15">1.15×</button></div>
  </section>
  <section class="reading">
@@ -82,5 +82,6 @@ segs.forEach(function(s){s.addEventListener('click',function(){var x=T[idx(s)].t
 a.addEventListener('seeking',function(){if(!a.paused)return;});
 document.querySelectorAll('.ctl button').forEach(function(b){b.addEventListener('click',function(){a.playbackRate=+b.getAttribute('data-s');document.querySelectorAll('.ctl button').forEach(function(x){x.classList.remove('on')});b.classList.add('on')})});
 a.addEventListener('play',function(){if(stopAt===null)return})})();
-</script>
+
+document.addEventListener('contextmenu',function(e){if(e.target.tagName==='AUDIO'||e.target.tagName==='IMG')e.preventDefault()});</script>
 </body></html>
