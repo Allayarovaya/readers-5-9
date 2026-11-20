@@ -63,7 +63,7 @@ footer{text-align:center;font-size:14px;padding:18px;opacity:.8}
  </section>
  <section class="reading">
   <div class="cardimg"><img src="card.jpg" alt=""></div>
-  <div class="text" id="text"><span class="seg" data-i="0">My name is Emma.</span> <span class="seg" data-i="1">I go to Green Bush School in Liverpool.</span> <span class="seg" data-i="2">My favourite subjects are IT and Art.</span> <span class="seg" data-i="3">IT means Information Technology.</span> <span class="seg" data-i="4">Our IT teacher is Mr. Jones.</span> <span class="seg" data-i="5">He is young, nice and fair.</span> <span class="seg newpara" data-i="6">There is a new IT room at our school.</span> <span class="seg" data-i="7">It’s great!</span> <span class="seg" data-i="8">There are 20 computers and a big screen in it.</span> <span class="seg" data-i="9">After lessons I go to the Drama Group.</span> <span class="seg" data-i="10">We act in funny plays.</span> <span class="seg" data-i="11">I love my school!</span></div>
+  <div class="text" id="text"><span class="seg" data-i="0">My name is Emma.</span> <span class="seg" data-i="1">I go to Green Bush School in Liverpool.</span> <span class="seg" data-i="2">My favourite subjects are Information Technology and Art.</span> <span class="seg" data-i="3">Our Information Technology teacher is Mr. Jones.</span> <span class="seg" data-i="4">He is young, nice and fair.</span> <span class="seg newpara" data-i="5">There is a new Information Technology room at our school.</span> <span class="seg" data-i="6">It’s great!</span> <span class="seg" data-i="7">There are 20 computers and a big screen in it.</span> <span class="seg" data-i="8">After lessons I go to the Drama Group.</span> <span class="seg" data-i="9">We act in funny plays.</span> <span class="seg" data-i="10">I love my school!</span></div>
   <p class="tip">Tap any sentence to hear it again.</p>
  </section>
  <section class="promo">
@@ -75,7 +75,7 @@ footer{text-align:center;font-size:14px;padding:18px;opacity:.8}
  </section>
 </main>
 <footer>made by Alla Yarova · <a href="https://materials.allaenglish.com/?utm_source=listen&utm_medium=page&utm_campaign=karpiuk5-u1-l8-emmas-favourite-subjects" target="_blank" rel="noopener">materials.allaenglish.com</a></footer>
-<script>const T=[{"t": [0.0, 0.92]}, {"t": [1.32, 3.5]}, {"t": [3.9, 6.41]}, {"t": [6.81, 8.96]}, {"t": [9.36, 11.66]}, {"t": [12.06, 14.1]}, {"t": [14.85, 16.87]}, {"t": [17.27, 17.98]}, {"t": [18.38, 20.9]}, {"t": [21.3, 23.32]}, {"t": [23.72, 25.2]}, {"t": [25.6, 26.65]}];(function(){var a=document.getElementById('au'),segs=[].slice.call(document.querySelectorAll('.seg')),cur=-1,stopAt=null;
+<script>const T=[{"t": [0.0, 0.92]}, {"t": [1.32, 3.5]}, {"t": [3.9, 7.27]}, {"t": [7.67, 10.67]}, {"t": [11.07, 13.12]}, {"t": [13.87, 16.59]}, {"t": [16.99, 17.71]}, {"t": [18.11, 20.63]}, {"t": [21.03, 23.05]}, {"t": [23.45, 24.92]}, {"t": [25.32, 26.37]}];(function(){var a=document.getElementById('au'),segs=[].slice.call(document.querySelectorAll('.seg')),cur=-1,stopAt=null;
 function idx(el){return +el.getAttribute('data-i')}
 a.addEventListener('timeupdate',function(){var t=a.currentTime,f=-1;segs.forEach(function(s,k){var x=T[idx(s)].t;if(t>=x[0]-0.05&&t<=x[1]+0.25)f=k});if(f!==cur){if(cur>=0)segs[cur].classList.remove('active');if(f>=0){segs[f].classList.add('active');}cur=f}if(stopAt!==null&&t>=stopAt){a.pause();stopAt=null}});
 segs.forEach(function(s){s.addEventListener('click',function(){var x=T[idx(s)].t;a.currentTime=x[0];stopAt=x[1]+0.1;a.play()})});
