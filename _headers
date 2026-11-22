@@ -1,2 +1,6 @@
 /*
   X-Robots-Tag: noindex, nofollow, noarchive, noimageindex
+
+/_q/*
+  Access-Control-Allow-Origin: https://elevenlabs.io
+  X-Robots-Tag: noindex
