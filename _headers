@@ -2,5 +2,5 @@
   X-Robots-Tag: noindex, nofollow, noarchive, noimageindex
 
 /tq/*
-  Access-Control-Allow-Origin: https://elevenlabs.io
+  Access-Control-Allow-Origin: *
   X-Robots-Tag: noindex
