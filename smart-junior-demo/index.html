@@ -116,4 +116,45 @@ Promise.resolve([{"grade": 1, "cover": "data:image/webp;base64,UklGRqipBABXRUJQV
   };
 })();
 </script>
+<style>
+#flip-sheet{display:none!important}
+.pf-layer{position:absolute;inset:0;z-index:7;pointer-events:none}
+.pf-layer .stf__parent{margin:0!important}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/page-flip@2.0.7/dist/js/page-flip.browser.js"></script>
+<script>
+(function(){
+  const BLANK='data:image/svg+xml;utf8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="595" height="842"><rect width="100%" height="100%" fill="#fff"/></svg>');
+  const plain=function(to){position=to;render();busy=false};const turn3d=window.jump;
+  window.jump=function(to){
+    if(mobile||!window.St||!St.PageFlip)return turn3d(to);
+    if(busy||to<0||to>=sheets().length||to===position)return;
+    stop();busy=true;
+    const pages=sheets(),fwd=to>position,bk=$('book'),r=bk.getBoundingClientRect();
+    const img=p=>p&&p.image?p.image:BLANK;
+    let imgs,start,W=mobile?r.width:r.width/2,H=r.height;
+    if(mobile){imgs=fwd?[img(pages[position]),img(pages[to])]:[img(pages[to]),img(pages[position])];start=fwd?0:1}
+    else{
+      const a=[img(pages[position]),img(pages[position+1])],b=[img(pages[to]),img(pages[to+1])];
+      imgs=fwd?a.concat(b):b.concat(a);start=fwd?0:2;
+    }
+    const layer=document.createElement('div');layer.className='pf-layer';
+    const holder=document.createElement('div');layer.appendChild(holder);bk.appendChild(layer);
+    bk.querySelectorAll('.hotspot').forEach(h=>h.style.visibility='hidden');
+    let done=false,started=false;
+    const finish=()=>{if(done)return;done=true;position=to;render();setTimeout(()=>{try{pf.destroy()}catch(e){}layer.remove();busy=false},30)};
+    let pf;
+    try{
+      pf=new St.PageFlip(holder,{width:Math.floor(W),height:Math.floor(H),size:'fixed',usePortrait:mobile,showCover:false,drawShadow:true,maxShadowOpacity:.6,flippingTime:950,mobileScrollSupport:false,startPage:start,showPageCorners:false,disableFlipByClick:true});
+      pf.on('flip',()=>{if(started)finish()});pf.on('changeState',e=>{if(started&&e.data==='read')finish()});
+      pf.on('init',()=>{
+        // hide the real pages under the layer only after the flipbook has drawn the same spread
+        setTimeout(()=>{started=true;fwd?pf.flipNext('bottom'):pf.flipPrev('bottom')},30);
+      });
+      pf.loadFromImages(imgs);
+    }catch(e){layer.remove();plain(to);return}
+    setTimeout(()=>{started=true;finish()},2600);
+  };
+})();
+</script>
 </body></html>
