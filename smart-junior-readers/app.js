@@ -1,8 +1,7 @@
 'use strict';
-const $=id=>document.getElementById(id),audio=$('audio'),video=$('video');
+const $=id=>document.getElementById(id);
 let readers=[],grade=1,position=0,busy=false,mobile=matchMedia('(max-width:600px)').matches,mode='all',endAt=null,rep=0,timer=null,downX=null,skipClick=false,chosenLesson=null;
 const book=()=>readers.find(r=>r.grade===grade),sheets=()=>[{image:book().cover,title:`Smart Junior ${grade}`,cover:true},...book().pages],activeLesson=()=>chosenLesson||book().pages[Math.max(0,Math.min(position-1,book().pages.length-1))];
-function stop(){clearTimeout(timer);audio.pause();endAt=null;mode='all';$('audio-play').textContent='▶ Слухати';$('repeat').textContent='↻ Повторювати'}
 function render(){chosenLesson=null;const pages=sheets(),left=pages[position],right=position===0?null:pages[position+1];$('book').classList.toggle('closed',position===0);const stepPositions=stops();$('left-page').src=left.image;$('left-page').alt=left.cover?`Обкладинка Smart Junior ${grade}`:`Smart Junior ${grade}: ${left.title}`;if(!mobile&&right){$('right-page').src=right.image;$('right-page').alt=`Smart Junior ${grade}: ${right.title}`}$('prev').disabled=position===0;$('next').disabled=position===stepPositions.at(-1);$('page-title').textContent=left.cover?`Smart Junior ${grade}`:left.title;$('page-count').textContent=`${position+1}${!mobile&&right?'–'+(position+2):''} / ${pages.length}`;for(const [el,p] of [[$('left-page'),left],[$('right-page'),right]]){el.parentElement.querySelectorAll('.hotspot').forEach(b=>b.remove());if(!p||p.cover)continue;for(const h of (p.hotspots||[])){const b=document.createElement('button');b.className='hotspot';b.style.cssText=`left:${h.x}%;top:${h.y}%;width:${h.w}%;height:${h.h}%`;b.setAttribute('aria-label',(h.kind==='audio'?'Слухати: ':'Грати: ')+p.title);b.onclick=e=>{e.stopPropagation();chosenLesson=p;$(h.kind==='audio'?'audio-button':'game-button').click()};el.parentElement.append(b)}}const count=stepPositions.length;$('dots').replaceChildren(...Array.from({length:count},(_,i)=>{const b=document.createElement('button');b.className=i===stepPositions.indexOf(position)?'active':'';b.setAttribute('aria-label',`Сторінка ${i+1}`);b.setAttribute('aria-current',String(b.className==='active'));b.onclick=()=>jump(stepPositions[i]);return b}));}
 function stops(){return mobile?[0,1,2,3,4]:[0,1,3]}
 let sound, sequence=0;
@@ -19,7 +18,7 @@ function rustle(){
 function jump(to, audible=true){
  if(!readers.length||busy||!stops().includes(to)||to===position)return;
  const token=++sequence, old=position, pages=sheets(), forward=to>old;
- if(audible)rustle();stop();busy=true;
+ if(audible)rustle();busy=true;
  const stage=$('book'),sheet=$('flip-sheet'),front=pages[old+(forward&&!mobile&&old?1:0)],back=pages[to+(!forward&&!mobile&&to?1:0)];
  position=to;render();stage.classList.add('animating');
  if(!mobile&&old>0&&to>0){$(forward?'left-page':'right-page').src=pages[old+(forward?0:1)].image}
@@ -30,22 +29,17 @@ function jump(to, audible=true){
  anim.finished.catch(()=>{}).then(()=>{if(token===sequence){stage.classList.remove('animating');busy=false;render()}});
 }
 function turn(direction){const a=stops();jump(a[a.indexOf(position)+direction])}
-function setGrade(g){if(!readers.length)return;sequence++;busy=false;$('book').classList.remove('animating');$('flip-sheet').getAnimations().forEach(a=>a.cancel());stop();grade=g;position=0;document.querySelectorAll('[data-grade]').forEach(b=>{const on=+b.dataset.grade===g;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on))});render();}
+function setGrade(g){if(!readers.length)return;sequence++;busy=false;$('book').classList.remove('animating');$('flip-sheet').getAnimations().forEach(a=>a.cancel());grade=g;position=0;document.querySelectorAll('[data-grade]').forEach(b=>{const on=+b.dataset.grade===g;b.classList.toggle('active',on);b.setAttribute('aria-pressed',String(on))});render();}
 $('prev').onclick=()=>turn(-1);$('next').onclick=()=>turn(1);document.querySelectorAll('[data-grade]').forEach(b=>b.onclick=()=>setGrade(+b.dataset.grade));
 window.addEventListener('resize',()=>{const next=matchMedia('(max-width:600px)').matches;if(mobile!==next){mobile=next;if(!mobile&&position>0)position=position<=2?1:3;if(readers.length)render()}});
 document.addEventListener('keydown',e=>{if(document.querySelector('dialog[open]'))return;if(e.key==='ArrowRight'){e.preventDefault();turn(1)}if(e.key==='ArrowLeft'){e.preventDefault();turn(-1)}});
 $('book').addEventListener('pointerdown',e=>downX=e.clientX);$('book').addEventListener('pointerup',e=>{if(downX===null)return;const delta=e.clientX-downX;downX=null;if(Math.abs(delta)>45){skipClick=true;turn(delta<0?1:-1);setTimeout(()=>skipClick=false,250)}});$('book').addEventListener('pointercancel',()=>downX=null);
 for(const id of ['left-page','right-page'])$(id).onclick=()=>{if(skipClick)return;if(position===0){jump(1);return;}$('zoom-page').src=$(id).src;$('zoom-page').alt=$(id).alt;$('zoom-dialog').showModal()};
 $('fullscreen').onclick=async()=>{try{if(document.fullscreenElement)await document.exitFullscreen();else if(document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();else{const b=$('fullscreen');b.textContent='↕';b.setAttribute('aria-label','Поверніть телефон горизонтально для більшого зразка')}}catch(e){$('fullscreen').title='Цей браузер не дозволяє повноекранний режим'}};
-function openDialog(id){document.querySelectorAll('dialog[open]').forEach(d=>d.close());stop();video.pause();$(id).showModal()}
-document.querySelectorAll('dialog').forEach(d=>{d.querySelector('.close').onclick=()=>d.close();d.addEventListener('close',()=>{stop();video.pause();if(d.id==='game-dialog')$('game-frame').replaceChildren()});d.addEventListener('click',e=>{if(e.target===d)d.close()})});
-$('video-button').onclick=()=>{openDialog('video-dialog');video.play().catch(()=>{})};
-$('audio-button').onclick=()=>{const p=activeLesson();$('audio-title').textContent=`${p.title} • Smart Junior ${grade}`;$('audio-image').src=p.image;audio.src=p.audio;audio.playbackRate=+$('speed').value;$('lines').replaceChildren(...p.lines.map((l,i)=>{const b=document.createElement('button');b.textContent=l.t;b.onclick=()=>{stop();mode='one';audio.currentTime=p.times[i][0];endAt=p.times[i][1];play()};return b}));$('audio-status').textContent='Натисніть речення, щоб послухати окремо.';openDialog('audio-dialog');play()};
-async function play(){try{await audio.play();$('audio-play').textContent='⏸ Пауза';$('audio-status').textContent=mode==='repeat'?'Слухайте. Потім буде пауза для повторення.':'Слухайте та стежте за текстом.'}catch(e){$('audio-status').textContent='Натисніть «Слухати», щоб увімкнути озвучення.'}}
-$('audio-play').onclick=()=>{if(!audio.paused){stop();$('audio-status').textContent='Пауза.'}else{clearTimeout(timer);mode='all';endAt=null;if(audio.ended)audio.currentTime=0;play()}};
-function repeatLine(){const p=activeLesson();if(rep>=p.lines.length){stop();$('audio-status').textContent='Чудово! Урок завершено.';return}audio.currentTime=p.times[rep][0];endAt=p.times[rep][1];play()}
-$('repeat').onclick=()=>{stop();mode='repeat';rep=0;$('repeat').textContent='↻ Режим повторення';repeatLine()};$('speed').onchange=()=>audio.playbackRate=+$('speed').value;
-audio.addEventListener('timeupdate',()=>{if(!readers.length)return;const p=activeLesson(),t=audio.currentTime;document.querySelectorAll('#lines button').forEach((b,i)=>{const on=t>=p.times[i][0]&&t<=p.times[i][1]+.1;if(on&&!b.classList.contains('current'))b.scrollIntoView({block:'nearest',behavior:'smooth'});b.classList.toggle('current',on);b.setAttribute('aria-current',String(on))});if(endAt!==null&&t>=endAt){audio.pause();endAt=null;if(mode==='repeat'){const duration=p.times[rep][1]-p.times[rep][0];rep++;$('audio-status').textContent='Тепер повторіть!';$('audio-play').textContent='▶ Продовжити';timer=setTimeout(repeatLine,Math.max(2300,duration*1000+800))}else $('audio-play').textContent='▶ Слухати'}});audio.addEventListener('ended',()=>{stop();$('audio-status').textContent='Урок прослухано!'});
+function openDialog(id){document.querySelectorAll('dialog[open]').forEach(d=>d.close());$(id).showModal()}
+document.querySelectorAll('dialog').forEach(d=>{d.querySelector('.close').onclick=()=>d.close();d.addEventListener('close',()=>{if(d.id==='game-dialog')$('game-frame').replaceChildren()});d.addEventListener('click',e=>{if(e.target===d)d.close()})});
+$('audio-button').onclick=()=>{if(readers.length)window.location.assign(activeLesson().listenUrl)};
 $('game-button').onclick=()=>{const p=activeLesson();openDialog('game-dialog');$('game-title').textContent=`${p.title} • Smart Junior ${grade}`;$('game-link').href=p.gameUrl;const f=document.createElement('iframe');f.src=p.gameUrl;f.title=`Гра до ридера: ${p.title}`;f.allow='fullscreen';$('game-frame').replaceChildren(f)};
-document.addEventListener('visibilitychange',()=>{if(document.hidden){stop();video.pause()}});
 fetch('assets/readers.json').then(r=>{if(!r.ok)throw Error('data');return r.json()}).then(data=>{readers=data;$('loading').hidden=true;setGrade(1);const first=sequence;setTimeout(()=>{if(first===sequence&&position===0&&!document.querySelector('dialog[open]'))jump(1,false)},1400)}).catch(()=>{$('loading').textContent='Не вдалося відкрити зразок. Оновіть сторінку.'});
+
+window.addEventListener('pageshow', e=>{if(e.persisted && readers.length){busy=false;render()}});
